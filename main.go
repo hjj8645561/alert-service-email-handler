@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	htemplate "html/template"
 	"io"
 	"io/ioutil"
 	"math"
@@ -86,7 +85,7 @@ const (
 var (
 	config = HandlerConfig{
 		PluginConfig: sensu.PluginConfig{
-			Name:     "sensu-email-handler",
+			Name:     "alert-service-email-handler",
 			Short:    "The Sensu Go Email handler for sending an email notification",
 			Keyspace: "sensu.io/plugins/email/config",
 		},
@@ -292,6 +291,7 @@ func sendEmail(event *corev2.Event) error {
 	if bodyErr != nil {
 		return bodyErr
 	}
+	fmt.Println(body)
 
 	recipients := newRcpts(config.ToEmail)
 
@@ -362,19 +362,19 @@ func resolveTemplate(templateValue string, event *corev2.Event, contentType stri
 		tmpl     templater
 		err      error
 	)
-	if contentType == ContentHTML {
-		// parse using html/template
-		tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
-			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
-			"UUIDFromBytes": uuid.FromBytes,
-		}).Parse(templateValue)
-	} else {
+	//if contentType == ContentHTML {
+	//	// parse using html/template
+	//	tmpl, err = htemplate.New("test").Funcs(htemplate.FuncMap{
+	//		"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
+	//		"UUIDFromBytes": uuid.FromBytes,
+	//	}).Parse(templateValue)
+	//} else {
 		// default parse using text/template
 		tmpl, err = ttemplate.New("test").Funcs(ttemplate.FuncMap{
 			"UnixTime":      func(i int64) time.Time { return time.Unix(i, 0) },
 			"UUIDFromBytes": uuid.FromBytes,
 		}).Parse(templateValue)
-	}
+	//}
 
 	if err != nil {
 		return "", err
