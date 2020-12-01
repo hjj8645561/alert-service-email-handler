@@ -46,12 +46,13 @@ func TestSendEmail(t *testing.T) {
 	maps := make(map[string]string)
 	maps["subject"] = "WebEx Monitoring Alert"
 	maps["body"] = "<table width='960' cellspacing='0' cellpadding='0' border='0'><tbody><tr><td class='title_td'><span class='title_td_txt' lang='EN-US'>WebEx Monitoring Alert Summary</span> </td></tr></tbody></table><h3 class='table_title'>Time Range: [2020-11-26 11:11:36 - 2020-11-26 11:18:05]</h3><h3 class='table_title'>Duration:6 mins</h3><table cellspacing='0' cellpadding='0' border='0' style='BORDER-COLLAPSE: collapse'><thead><tr><th class='major_thead_td' nowrap=''><span class='major_thead_txt' lang='EN-US'>Test Target</span></th><th class='major_thead_td' nowrap=''><span class='major_thead_txt' lang='EN-US'>Alert Time</span></th><th class='major_thead_td' nowrap=''><span class='major_thead_txt' lang='EN-US'>Alert Count</span></th><th class='major_thead_td' nowrap=''><span class='major_thead_txt' lang='EN-US'>Alert Message</span></th><th class='major_thead_td' nowrap=''><span class='major_thead_txt' lang='EN-US'>Comment</span></th></tr></thead><tbody><tr><td style='height:20px'><span class='tbody_td_txt' lang='EN-US'>msj1mcs102.webex.com</span></td><td><span class='tbody_td_txt' lang='EN-US'>2020-11-26 11:14:36</span></td><td><span class='tbody_td_txt'>{MCT=1}</span></td><td><span class='tbody_td_txt' lang='EN-US'>{MCT=msj1mcs101.webex.com tested fail.}</span></td><td><span class='tbody_td_txt' lang='EN-US'>pool:msj1(mmp)</span></td></tr><tr><td style='height:20px'><span class='tbody_td_txt' lang='EN-US'>msj1mcs101.webex.com</span></td><td><span class='tbody_td_txt' lang='EN-US'>2020-11-26 11:11:36</span></td><td><span class='tbody_td_txt'>{MCT=1}</span></td><td><span class='tbody_td_txt' lang='EN-US'>{MCT=msj1mcs101.webex.com tested fail.}</span></td><td><span class='tbody_td_txt' lang='EN-US'>pool:msj1(mmp)</span></td></tr><tr><td class='table_sep_line' colspan='5'></td></tr></tbody></table>"
+	maps["recipient"] = "ceo-cmse-sm-alertservice-primary@ciscospark.pagerduty.com"
 	event.Check.Annotations = maps
 	config.SmtpHost = "mda.webex.com"
 	config.Insecure = true
 	config.FromEmail ="sensu@cisco.com"
 	config.BodyTemplateFile = "/etc/sensu/email_template"
-	config.ToEmail = []string{"jinjhe@cisco.com"}
+	config.ToEmail = []string{"{{.Check.Annotations.recipient}},jinjhe@cisco.com"}
 	config.SubjectTemplate = "{{.Check.Annotations.subject}}"
 	_ = checkArgs(event)
 	_ = sendEmail(event)

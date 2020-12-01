@@ -294,6 +294,13 @@ func sendEmail(event *corev2.Event) error {
 	fmt.Println(body)
 
 	recipients := newRcpts(config.ToEmail)
+	for i, t := range recipients{
+		rcpt, err := resolveTemplate(t, event, ContentPlain)
+		if err != nil{
+			return err
+		}
+		recipients[i] = rcpt
+	}
 
 	t := time.Now()
 
